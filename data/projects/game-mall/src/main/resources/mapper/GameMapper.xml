@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.GameMapper">
+
+    <resultMap id="gameMap" type="Game">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="price" column="price"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="image" column="image"/>
+        <result property="stock" column="stock"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="findById" resultMap="gameMap">
+        SELECT * FROM game WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="gameMap">
+        SELECT * FROM game ORDER BY create_time DESC
+    </select>
+
+    <select id="findByCategoryId" resultMap="gameMap">
+        SELECT * FROM game WHERE category_id = #{categoryId} ORDER BY create_time DESC
+    </select>
+
+    <select id="search" resultMap="gameMap">
+        SELECT * FROM game
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="Game" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO game (name, description, price, category_id, image, stock, create_time)
+        VALUES (#{name}, #{description}, #{price}, #{categoryId}, #{image}, #{stock}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="Game">
+        UPDATE game
+        SET name = #{name}, description = #{description}, price = #{price},
+            category_id = #{categoryId}, image = #{image}, stock = #{stock}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM game WHERE id = #{id}
+    </delete>
+
+    <select id="getUserCount" resultType="int">
+        SELECT COUNT(*) FROM user
+    </select>
+
+    <select id="getOrderCount" resultType="int">
+        SELECT COUNT(*) FROM orders
+    </select>
+
+    <select id="getGameCount" resultType="int">
+        SELECT COUNT(*) FROM game
+    </select>
+
+    <select id="getPendingOrderCount" resultType="int">
+        SELECT COUNT(*) FROM orders WHERE status = 1
+    </select>
+
+    <select id="getFeaturedGames" resultMap="gameMap">
+        SELECT * FROM game ORDER BY RAND() LIMIT #{limit}
+    </select>
+</mapper>

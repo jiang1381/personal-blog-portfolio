@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.GameCategoryMapper">
+
+    <resultMap id="categoryMap" type="GameCategory">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="findById" resultMap="categoryMap">
+        SELECT * FROM game_category WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="categoryMap">
+        SELECT * FROM game_category ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="GameCategory" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO game_category (name, description, create_time)
+        VALUES (#{name}, #{description}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="GameCategory">
+        UPDATE game_category
+        SET name = #{name}, description = #{description}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM game_category WHERE id = #{id}
+    </delete>
+</mapper>
