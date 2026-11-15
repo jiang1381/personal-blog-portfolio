@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运行演示</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+         background: #0b0f16; color: #e6edf6; height: 100vh; display: flex; flex-direction: column; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 16px;
+           padding: 12px 20px; background: #111823; border-bottom: 1px solid #1d2838; flex-shrink: 0; }
+  header .left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  header a { color: #5cb8ff; text-decoration: none; font-size: 13px; white-space: nowrap; }
+  header h1 { font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tag { font-size: 11px; background: #16202e; border: 1px solid #223049; color: #8fb6e8;
+         padding: 2px 8px; border-radius: 5px; white-space: nowrap; }
+  .btn { background: #2563eb; color: #fff; padding: 7px 14px; border-radius: 7px;
+         font-size: 13px; font-weight: 600; }
+  .btn:hover { background: #3b82f6; }
+  #wrap { flex: 1; position: relative; background: #0b0f16; }
+  #frame { width: 100%; height: 100%; border: none; background: #fff; }
+  #hint { padding: 10px 20px; font-size: 12.5px; color: #f5b451; background: #1b1508;
+          border-bottom: 1px solid #3a2b12; display: none; }
+  #hint.show { display: block; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="left">
+      <a href="/">← 返回作品集</a>
+      <h1 id="title">运行演示</h1>
+      <span class="tag" id="tag"></span>
+    </div>
+    <a class="btn" id="openBtn" href="#" target="_blank">在新窗口打开 ↗</a>
+  </header>
+  <div id="hint"></div>
+  <div id="wrap"><iframe id="frame" title="运行演示"></iframe></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const projectId = new URLSearchParams(location.search).get("project");
+
+async function main() {
+  if (!projectId) {
+    $("title").textContent = "缺少项目参数";
+    $("hint").textContent = "请从作品集的项目详情里点击「打开运行演示」。";
+    $("hint").classList.add("show");
+    return;
+  }
+  const site = await (await fetch("/api/site")).json();
+  const p = (site.projects || []).find((x) => x.id === projectId);
+  if (!p) {
+    $("title").textContent = "项目不存在";
+    $("hint").textContent = "没有找到 id 为 " + projectId + " 的项目。";
+    $("hint").classList.add("show");
+    return;
+  }
+  document.title = p.name + " · 运行演示";
+  $("title").textContent = p.name;
+  $("tag").textContent = (p.tech || []).join(" · ");
+
+  if (!p.demo_url) {
+    $("hint").textContent = "该项目还没有配置运行地址，可在管理后台的「在线体验地址」里填写。";
+    $("hint").classList.add("show");
+    return;
+  }
+  $("openBtn").href = p.demo_url;
+  $("frame").src = p.demo_url;
+  $("hint").textContent = "如果下方页面空白，说明演示服务未启动（" + p.demo_url + "），请先启动对应项目。";
+  $("hint").classList.add("show");
+}
+
+main();
+</script>
+</body>
+</html>

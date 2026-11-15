@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>陈玥妃 · 个人作品集</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+         background: #0b0f16; color: #e6edf6; line-height: 1.7; }
+  a { color: #5cb8ff; text-decoration: none; }
+  nav { position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between;
+        align-items: center; padding: 14px 32px; background: rgba(11,15,22,.85);
+        backdrop-filter: blur(8px); border-bottom: 1px solid #1d2635; }
+  nav .brand { font-weight: 700; letter-spacing: .5px; }
+  nav .links { display: flex; gap: 18px; font-size: 14px; }
+  nav .links a { color: #9fb0c9; }
+  nav .links a:hover { color: #5cb8ff; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+  header { padding: 72px 0 48px; }
+  .hello { color: #5cb8ff; font-size: 14px; letter-spacing: 2px; }
+  h1 { font-size: 44px; margin: 8px 0 6px; }
+  .role { font-size: 18px; color: #b7c5da; }
+  .summary { margin-top: 18px; max-width: 720px; color: #9fb0c9; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .chip { background: #141c28; border: 1px solid #223049; color: #a9c1ff;
+          padding: 5px 12px; border-radius: 999px; font-size: 13px; }
+  section { padding: 36px 0; border-top: 1px solid #161e2b; }
+  h2 { font-size: 22px; margin-bottom: 18px; }
+  h2 span { color: #5cb8ff; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .card { background: #111823; border: 1px solid #1d2838; border-radius: 14px; padding: 18px;
+          transition: border-color .15s, transform .15s; cursor: pointer; }
+  .card:hover { border-color: #2f4a6f; transform: translateY(-2px); }
+  .card h3 { font-size: 17px; margin-bottom: 6px; }
+  .card .meta { font-size: 12px; color: #7f8ea6; margin-bottom: 8px; }
+  .card .desc { font-size: 13.5px; color: #9fb0c9; display: -webkit-box;
+                -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag { font-size: 11.5px; background: #16202e; border: 1px solid #223049;
+         color: #8fb6e8; padding: 2px 8px; border-radius: 5px; }
+  .edu { display: flex; flex-direction: column; gap: 12px; }
+  .edu .row { display: flex; gap: 16px; align-items: baseline; }
+  .edu .period { color: #5cb8ff; font-size: 13px; min-width: 110px; }
+  .skill-group { margin-bottom: 12px; }
+  .skill-group .g { color: #7f8ea6; font-size: 12px; margin-bottom: 6px; }
+  .award { display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px dashed #1d2838; }
+  .award:last-child { border-bottom: none; }
+  .award .year { color: #5cb8ff; font-size: 13px; min-width: 56px; }
+  footer { padding: 40px 0 60px; color: #5f6b7d; font-size: 13px; text-align: center; }
+  /* 弹窗 */
+  #modal { position: fixed; inset: 0; background: rgba(0,0,0,.66); display: none;
+           align-items: center; justify-content: center; padding: 24px; z-index: 50; }
+  #modal.open { display: flex; }
+  .modal-box { background: #0f1520; border: 1px solid #223049; border-radius: 16px;
+               max-width: 780px; width: 100%; max-height: 86vh; overflow-y: auto; padding: 26px; }
+  .modal-box h2 { margin-bottom: 4px; }
+  .modal-box .close { float: right; background: none; border: none; color: #7f8ea6;
+                      font-size: 22px; cursor: pointer; }
+  .modal-box h4 { margin: 18px 0 8px; color: #5cb8ff; font-size: 14px; }
+  .modal-box ul { padding-left: 20px; color: #b7c5da; font-size: 14px; }
+  .modal-box li { margin: 4px 0; }
+  .files { display: flex; flex-direction: column; gap: 6px; }
+  .file { display: flex; justify-content: space-between; align-items: center; gap: 8px;
+          background: #131b27; border: 1px solid #1d2838; border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+  .file .ops { display: flex; gap: 10px; }
+  .file .ops a { font-size: 12.5px; }
+  .empty { color: #5f6b7d; font-size: 13px; }
+  /* 运行截图 */
+  .shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-top: 10px; }
+  .shot { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 8px;
+          border: 1px solid #223049; cursor: zoom-in; background: #0b0f16; }
+  .shot:hover { border-color: #5cb8ff; }
+  .demo-btn { display: inline-block; margin: 4px 0 10px; background: #2563eb; color: #fff;
+              padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+  .demo-btn:hover { background: #3b82f6; }
+  /* 灯箱 */
+  #lightbox { position: fixed; inset: 0; background: rgba(0, 0, 0, .92); display: none;
+              align-items: center; justify-content: center; z-index: 100; }
+  #lightbox.open { display: flex; }
+  #lbImg { max-width: 92vw; max-height: 88vh; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,.6); }
+  .lb-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.12);
+            border: none; color: #fff; font-size: 32px; width: 56px; height: 56px;
+            border-radius: 50%; cursor: pointer; }
+  .lb-btn:hover { background: rgba(255,255,255,.22); }
+  .lb-prev { left: 24px; }
+  .lb-next { right: 24px; }
+  .lb-count { position: absolute; bottom: 22px; color: #9fb0c9; font-size: 13px; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand">陈玥妃 · Portfolio</div>
+  <div class="links">
+    <a href="#projects">项目</a>
+    <a href="#awards">荣誉</a>
+    <a href="#contact">联系</a>
+    <a href="/admin">管理</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header id="hero">
+    <div class="hello">HELLO, WORLD</div>
+    <h1 id="name">加载中…</h1>
+    <div class="role" id="title"></div>
+    <p class="summary" id="summary"></p>
+    <div class="chips" id="contactChips"></div>
+  </header>
+
+  <section id="skills">
+    <h2>技能栈 <span>Skills</span></h2>
+    <div id="skillsBox"></div>
+  </section>
+
+  <section id="education">
+    <h2>教育背景 <span>Education</span></h2>
+    <div class="edu" id="eduBox"></div>
+  </section>
+
+  <section id="projects">
+    <h2>项目作品 <span>Projects</span></h2>
+    <div class="grid" id="projectGrid"></div>
+  </section>
+
+  <section id="awards">
+    <h2>个人荣誉 <span>Awards</span></h2>
+    <div id="awardBox"></div>
+  </section>
+
+  <section id="contact">
+    <h2>联系我 <span>Contact</span></h2>
+    <div class="chips" id="contactChips2"></div>
+  </section>
+
+  <footer>由 Python 标准库手写的个人作品集 · 数据可在 <a href="/admin">管理后台</a> 随时修改</footer>
+</div>
+
+<div id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<div id="lightbox" onclick="closeLightbox()">
+  <button class="lb-btn lb-prev" onclick="event.stopPropagation();lbStep(-1)">‹</button>
+  <img id="lbImg" onclick="event.stopPropagation()" alt="">
+  <button class="lb-btn lb-next" onclick="event.stopPropagation();lbStep(1)">›</button>
+  <div class="lb-count" id="lbCount"></div>
+</div>
+
+<script>
+let SITE = null;
+
+function esc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+async function load() {
+  SITE = await (await fetch("/api/site")).json();
+  const p = SITE.profile || {};
+  document.title = (p.name || "个人作品集") + " · Portfolio";
+  document.getElementById("name").textContent = p.name || "—";
+  document.getElementById("title").textContent = p.title || "";
+  document.getElementById("summary").textContent = p.summary || "";
+
+  const chips = [];
+  if (p.email) chips.push("📧 " + p.email);
+  if (p.phone) chips.push("📱 " + p.phone);
+  if (p.location) chips.push("📍 " + p.location);
+  if (p.github) chips.push("🔗 " + p.github);
+  const chipHtml = chips.map(c => `<span class="chip">${esc(c)}</span>`).join("");
+  document.getElementById("contactChips").innerHTML = chipHtml;
+  document.getElementById("contactChips2").innerHTML = chipHtml;
+
+  document.getElementById("skillsBox").innerHTML = (p.skills || []).map(g =>
+    `<div class="skill-group"><div class="g">${esc(g.group)}</div>
+     <div class="chips">${(g.items || []).map(i => `<span class="chip">${esc(i)}</span>`).join("")}</div></div>`
+  ).join("") || '<div class="empty">暂无</div>';
+
+  document.getElementById("eduBox").innerHTML = (p.education || []).map(e =>
+    `<div class="row"><span class="period">${esc(e.period)}</span>
+     <span>${esc(e.school)} · ${esc(e.major)} · ${esc(e.degree)}</span></div>`
+  ).join("") || '<div class="empty">暂无</div>';
+
+  document.getElementById("projectGrid").innerHTML = (SITE.projects || []).map(pr =>
+    `<div class="card" onclick="openProject('${esc(pr.id)}')">
+       <h3>${esc(pr.name)}</h3>
+       <div class="meta">${esc(pr.role || "")}${pr.period ? " · " + esc(pr.period) : ""}</div>
+       <div class="desc">${esc(pr.summary || "")}</div>
+       <div class="tags">${(pr.tech || []).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+     </div>`
+  ).join("") || '<div class="empty">暂无项目</div>';
+
+  document.getElementById("awardBox").innerHTML = (SITE.awards || []).map(a =>
+    `<div class="award"><span class="year">${esc(a.year || "")}</span>
+     <span>${esc(a.title)}${a.org ? ' · <span class="meta">' + esc(a.org) + "</span>" : ""}</span></div>`
+  ).join("") || '<div class="empty">暂无</div>';
+}
+
+function openProject(id) {
+  const pr = (SITE.projects || []).find(p => p.id === id);
+  if (!pr) return;
+
+  const shots = pr.screenshots || [];
+  currentShots = shots.map(s =>
+    `/api/projects/${encodeURIComponent(id)}/screenshots/${encodeURIComponent(s.name)}`);
+  const shotsHtml = shots.length
+    ? `<div class="shots">${shots.map((s, i) =>
+        `<img class="shot" src="/api/projects/${encodeURIComponent(id)}/screenshots/${encodeURIComponent(s.name)}" onclick="openLightbox(${i})" alt="${esc(s.name)}">`
+      ).join("")}</div>`
+    : '<div class="empty">还没有上传运行截图，可在管理后台上传</div>';
+
+  const files = (pr.files || []).map(f =>
+    `<div class="file"><span>${esc(f.name)} <span class="empty">(${(f.size/1024).toFixed(1)} KB)</span></span>
+     <span class="ops">
+       <a href="/api/projects/${encodeURIComponent(id)}/files/${encodeURIComponent(f.name)}?preview=1" target="_blank">预览</a>
+       <a href="/api/projects/${encodeURIComponent(id)}/files/${encodeURIComponent(f.name)}">下载</a>
+     </span></div>`
+  ).join("") || '<div class="empty">还没有上传代码文件</div>';
+
+  document.getElementById("modalBox").innerHTML = `
+    <button class="close" onclick="closeModal()">×</button>
+    <h2>${esc(pr.name)}</h2>
+    <div class="meta">${esc(pr.role || "")}${pr.period ? " · " + esc(pr.period) : ""}</div>
+    ${pr.demo_url ? `<a class="demo-btn" href="/demo?project=${encodeURIComponent(pr.id)}" target="_blank">▶ 在线体验</a>` : ""}
+    <p style="margin-top:12px;color:#b7c5da">${esc(pr.summary || "")}</p>
+    <div class="tags">${(pr.tech || []).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+    <h4>运行效果</h4>${shotsHtml}
+    ${(pr.highlights || []).length ? `<h4>技术亮点</h4><ul>${pr.highlights.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    ${(pr.results || []).length ? `<h4>项目成果</h4><ul>${pr.results.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    ${pr.demo_url ? `<div style="margin-top:12px"><a class="demo-btn" href="/demo?project=${encodeURIComponent(pr.id)}" target="_blank">▶ 打开运行演示（新窗口）</a></div>` : ""}
+    <h4>代码文件</h4><div class="files">${files}</div>
+  `;
+  document.getElementById("modal").classList.add("open");
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("open");
+}
+
+/* ---------------- 截图灯箱 ---------------- */
+let currentShots = [];
+let lbIndex = 0;
+
+function openLightbox(i) {
+  if (!currentShots.length) return;
+  lbIndex = i;
+  showLightbox();
+}
+
+function showLightbox() {
+  document.getElementById("lbImg").src = currentShots[lbIndex];
+  document.getElementById("lbCount").textContent =
+    `${lbIndex + 1} / ${currentShots.length}`;
+  document.getElementById("lightbox").classList.add("open");
+}
+
+function closeLightbox() {
+  document.getElementById("lightbox").classList.remove("open");
+}
+
+function lbStep(step) {
+  if (!currentShots.length) return;
+  lbIndex = (lbIndex + step + currentShots.length) % currentShots.length;
+  showLightbox();
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeLightbox();
+  if (e.key === "ArrowLeft") lbStep(-1);
+  if (e.key === "ArrowRight") lbStep(1);
+});
+
+load();
+</script>
+</body>
+</html>

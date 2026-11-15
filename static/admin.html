@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理后台</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+         background: #0b0f16; color: #e6edf6; line-height: 1.65; }
+  a { color: #5cb8ff; text-decoration: none; }
+  header { display: flex; justify-content: space-between; align-items: center;
+           padding: 16px 28px; border-bottom: 1px solid #1d2635; }
+  header h1 { font-size: 18px; }
+  header .right { display: flex; gap: 16px; font-size: 13px; }
+  .tabs { display: flex; gap: 4px; padding: 14px 28px 0; }
+  .tab { padding: 8px 18px; border-radius: 8px 8px 0 0; cursor: pointer;
+         font-size: 13.5px; color: #8fa0b8; border: 1px solid transparent; }
+  .tab.active { background: #111823; color: #e6edf6; border-color: #1d2838;
+                border-bottom-color: #111823; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 20px 28px 60px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .card { background: #111823; border: 1px solid #1d2838; border-radius: 12px;
+          padding: 18px; margin-bottom: 14px; }
+  h2 { font-size: 16px; margin-bottom: 14px; }
+  label { display: block; font-size: 12px; color: #8fa0b8; margin: 10px 0 4px; }
+  input, textarea, select {
+    width: 100%; background: #0b0f16; border: 1px solid #223049; border-radius: 7px;
+    color: #e6edf6; padding: 8px 10px; font-size: 13px; font-family: inherit;
+  }
+  textarea { min-height: 80px; resize: vertical; }
+  input:focus, textarea:focus { outline: none; border-color: #3b82f6; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  button { border: none; border-radius: 7px; padding: 8px 14px; cursor: pointer;
+           font-size: 13px; font-weight: 600; }
+  .primary { background: #2563eb; color: #fff; }
+  .ghost { background: #1b2433; color: #c4cbdd; }
+  .danger { background: #3a1f22; color: #f87171; }
+  .small { padding: 4px 10px; font-size: 12px; }
+  .ops { display: flex; gap: 8px; flex-wrap: wrap; }
+  .list-item { border-bottom: 1px dashed #1d2838; padding: 12px 0; }
+  .list-item:last-child { border-bottom: none; }
+  .item-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .item-head .t { font-weight: 600; }
+  .muted { color: #7f8ea6; font-size: 12px; }
+  .files { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .file { display: flex; justify-content: space-between; align-items: center;
+          background: #0b0f16; border: 1px solid #1d2838; border-radius: 6px;
+          padding: 6px 10px; font-size: 12.5px; }
+  .file .ops a { font-size: 12px; margin-right: 8px; }
+  .shots { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .shot-item { position: relative; width: 150px; }
+  .shot-item img { width: 150px; height: 94px; object-fit: cover; border-radius: 6px;
+                   border: 1px solid #1d2838; }
+  .shot-item a { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,.65);
+                 color: #f87171; font-size: 11px; padding: 1px 6px; border-radius: 4px; }
+  .hint { color: #7f8ea6; font-size: 12px; margin-top: 6px; line-height: 1.6; }
+  .toast { position: fixed; right: 24px; bottom: 24px; background: #123a2b; color: #7cf0b0;
+           padding: 10px 16px; border-radius: 8px; font-size: 13px; display: none; }
+  .toast.show { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🛠 管理后台</h1>
+  <div class="right"><a href="/" target="_blank">查看作品集 ↗</a></div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="profile">基本信息</div>
+  <div class="tab" data-tab="projects">项目管理</div>
+  <div class="tab" data-tab="awards">奖项管理</div>
+</div>
+
+<div class="wrap">
+  <!-- 基本信息 -->
+  <div class="panel active" id="panel-profile">
+    <div class="card">
+      <h2>个人信息</h2>
+      <div class="row2">
+        <div><label>姓名</label><input id="p_name"></div>
+        <div><label>一句话头衔</label><input id="p_title"></div>
+      </div>
+      <label>个人简介</label><textarea id="p_summary"></textarea>
+      <div class="row3">
+        <div><label>邮箱</label><input id="p_email"></div>
+        <div><label>电话</label><input id="p_phone"></div>
+        <div><label>所在地</label><input id="p_location"></div>
+      </div>
+      <label>GitHub / 主页</label><input id="p_github">
+      <label>教育背景（每行：时间 | 学校 | 专业 | 学历）</label>
+      <textarea id="p_education" placeholder="2025-2027 | 广西科技师范学院 | 软件工程 | 全日制本科"></textarea>
+      <label>技能栈（每行：分组 | 技能1, 技能2）</label>
+      <textarea id="p_skills" placeholder="后端 | Java, SpringMVC, MySQL"></textarea>
+      <div style="margin-top:14px"><button class="primary" onclick="saveProfile()">保存基本信息</button></div>
+    </div>
+  </div>
+
+  <!-- 项目管理 -->
+  <div class="panel" id="panel-projects">
+    <div class="card">
+      <h2 id="projFormTitle">新建项目</h2>
+      <div class="row2">
+        <div><label>项目名称</label><input id="pr_name"></div>
+        <div><label>担任角色</label><input id="pr_role"></div>
+      </div>
+      <div class="row2">
+        <div><label>时间</label><input id="pr_period" placeholder="2024 / 2025.03-2025.06"></div>
+        <div><label>技术栈（逗号分隔）</label><input id="pr_tech" placeholder="Java, SpringMVC, MySQL"></div>
+      </div>
+      <label>在线体验地址（可选，例如 http://127.0.0.1:8080）</label><input id="pr_demo">
+      <label>项目简介</label><textarea id="pr_summary"></textarea>
+      <label>技术亮点（每行一条）</label><textarea id="pr_highlights"></textarea>
+      <label>项目成果（每行一条）</label><textarea id="pr_results"></textarea>
+      <div class="ops" style="margin-top:14px">
+        <button class="primary" id="projSaveBtn" onclick="saveProject()">保存项目</button>
+        <button class="ghost" onclick="resetProjectForm()">清空 / 取消编辑</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>项目列表</h2>
+      <div id="projectList"></div>
+    </div>
+  </div>
+
+  <!-- 奖项管理 -->
+  <div class="panel" id="panel-awards">
+    <div class="card">
+      <h2 id="awardFormTitle">新建奖项</h2>
+      <div class="row3">
+        <div><label>奖项名称</label><input id="a_title"></div>
+        <div><label>年份</label><input id="a_year"></div>
+        <div><label>颁发机构（可选）</label><input id="a_org"></div>
+      </div>
+      <div class="ops" style="margin-top:14px">
+        <button class="primary" onclick="saveAward()">保存奖项</button>
+        <button class="ghost" onclick="resetAwardForm()">清空 / 取消编辑</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>奖项列表</h2>
+      <div id="awardList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let SITE = { profile: {}, projects: [], awards: [] };
+let editingProject = null;
+let editingAward = null;
+
+const $ = (id) => document.getElementById(id);
+
+function esc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function toast(msg) {
+  const el = $("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 1800);
+}
+
+async function api(method, path, body) {
+  const res = await fetch(path, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "请求失败");
+  return data;
+}
+
+async function refresh() {
+  SITE = await (await fetch("/api/site")).json();
+  renderProfile();
+  renderProjects();
+  renderAwards();
+}
+
+/* ---------------- 基本信息 ---------------- */
+function renderProfile() {
+  const p = SITE.profile || {};
+  $("p_name").value = p.name || "";
+  $("p_title").value = p.title || "";
+  $("p_summary").value = p.summary || "";
+  $("p_email").value = p.email || "";
+  $("p_phone").value = p.phone || "";
+  $("p_location").value = p.location || "";
+  $("p_github").value = p.github || "";
+  $("p_education").value = (p.education || [])
+    .map(e => [e.period, e.school, e.major, e.degree].join(" | ")).join("\n");
+  $("p_skills").value = (p.skills || [])
+    .map(g => g.group + " | " + (g.items || []).join(", ")).join("\n");
+}
+
+async function saveProfile() {
+  const education = $("p_education").value.split("\n").filter(l => l.trim()).map(line => {
+    const [period = "", school = "", major = "", degree = ""] = line.split("|").map(s => s.trim());
+    return { period, school, major, degree };
+  });
+  const skills = $("p_skills").value.split("\n").filter(l => l.trim()).map(line => {
+    const [group = "", items = ""] = line.split("|");
+    return {
+      group: group.trim(),
+      items: items.split(",").map(s => s.trim()).filter(Boolean),
+    };
+  });
+  await api("PUT", "/api/profile", {
+    name: $("p_name").value.trim(),
+    title: $("p_title").value.trim(),
+    summary: $("p_summary").value.trim(),
+    email: $("p_email").value.trim(),
+    phone: $("p_phone").value.trim(),
+    location: $("p_location").value.trim(),
+    github: $("p_github").value.trim(),
+    education, skills,
+  });
+  await refresh();
+  toast("基本信息已保存");
+}
+
+/* ---------------- 项目 ---------------- */
+function resetProjectForm() {
+  editingProject = null;
+  $("projFormTitle").textContent = "新建项目";
+  ["pr_name", "pr_role", "pr_period", "pr_tech", "pr_summary", "pr_highlights", "pr_results", "pr_demo"]
+    .forEach(id => $(id).value = "");
+}
+
+function editProject(id) {
+  const pr = SITE.projects.find(p => p.id === id);
+  if (!pr) return;
+  editingProject = id;
+  $("projFormTitle").textContent = "编辑项目：" + pr.name;
+  $("pr_name").value = pr.name || "";
+  $("pr_role").value = pr.role || "";
+  $("pr_period").value = pr.period || "";
+  $("pr_tech").value = (pr.tech || []).join(", ");
+  $("pr_demo").value = pr.demo_url || "";
+  $("pr_summary").value = pr.summary || "";
+  $("pr_highlights").value = (pr.highlights || []).join("\n");
+  $("pr_results").value = (pr.results || []).join("\n");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function projectPayload() {
+  return {
+    name: $("pr_name").value.trim(),
+    role: $("pr_role").value.trim(),
+    period: $("pr_period").value.trim(),
+    tech: $("pr_tech").value.split(",").map(s => s.trim()).filter(Boolean),
+    demo_url: $("pr_demo").value.trim(),
+    summary: $("pr_summary").value.trim(),
+    highlights: $("pr_highlights").value.split("\n").map(s => s.trim()).filter(Boolean),
+    results: $("pr_results").value.split("\n").map(s => s.trim()).filter(Boolean),
+  };
+}
+
+async function saveProject() {
+  const payload = projectPayload();
+  if (!payload.name) { toast("项目名称不能为空"); return; }
+  if (editingProject) {
+    await api("PUT", "/api/projects/" + encodeURIComponent(editingProject), payload);
+  } else {
+    await api("POST", "/api/projects", payload);
+  }
+  resetProjectForm();
+  await refresh();
+  toast("项目已保存");
+}
+
+async function deleteProject(id) {
+  if (!confirm("确定删除这个项目？代码文件也会一起删除。")) return;
+  await api("DELETE", "/api/projects/" + encodeURIComponent(id));
+  await refresh();
+  toast("项目已删除");
+}
+
+function renderProjects() {
+  const box = $("projectList");
+  if (!SITE.projects.length) {
+    box.innerHTML = '<div class="muted">还没有项目</div>';
+    return;
+  }
+  box.innerHTML = SITE.projects.map(pr => {
+    const files = (pr.files || []).map(f =>
+      `<div class="file"><span>${esc(f.name)} <span class="muted">(${(f.size/1024).toFixed(1)} KB)</span></span>
+       <span class="ops">
+         <a href="/api/projects/${encodeURIComponent(pr.id)}/files/${encodeURIComponent(f.name)}?preview=1" target="_blank">预览</a>
+         <a href="/api/projects/${encodeURIComponent(pr.id)}/files/${encodeURIComponent(f.name)}">下载</a>
+         <a href="javascript:delFile('${esc(pr.id)}','${esc(f.name)}')">删除</a>
+       </span></div>`
+    ).join("") || '<div class="muted">暂无代码文件</div>';
+    return `<div class="list-item">
+      <div class="item-head">
+        <div><div class="t">${esc(pr.name)}</div>
+          <div class="muted">${esc(pr.role || "")}${pr.period ? " · " + esc(pr.period) : ""} · ${(pr.tech || []).join(" / ")}</div>
+        </div>
+        <div class="ops">
+          <button class="ghost small" onclick="editProject('${esc(pr.id)}')">编辑</button>
+          <button class="danger small" onclick="deleteProject('${esc(pr.id)}')">删除</button>
+        </div>
+      </div>
+      <div class="files">${files}</div>
+      <div class="muted" style="margin-top:10px">运行截图</div>
+      <div class="shots">${(pr.screenshots || []).map(s =>
+        `<div class="shot-item"><img src="/api/projects/${encodeURIComponent(pr.id)}/screenshots/${encodeURIComponent(s.name)}">
+         <a href="javascript:delShot('${esc(pr.id)}','${esc(s.name)}')">删除</a></div>`).join("")}
+      </div>
+      <div class="ops" style="margin-top:8px">
+        <input type="file" multiple accept="image/*" style="width:auto" onchange="uploadShots('${esc(pr.id)}', this)">
+      </div>
+      <div class="ops" style="margin-top:8px">
+        <input type="file" multiple style="width:auto" onchange="uploadFiles('${esc(pr.id)}', this)">
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadFiles(projectId, input) {
+  const files = Array.from(input.files || []);
+  if (!files.length) return;
+  for (const file of files) {
+    const content = await fileToBase64(file);
+    await api("POST", "/api/projects/" + encodeURIComponent(projectId) + "/files",
+              { name: file.name, content });
+  }
+  input.value = "";
+  await refresh();
+  toast(`已上传 ${files.length} 个文件`);
+}
+
+async function delFile(projectId, name) {
+  if (!confirm("确定删除文件 " + name + "？")) return;
+  await api("DELETE", "/api/projects/" + encodeURIComponent(projectId) + "/files/" + encodeURIComponent(name));
+  await refresh();
+  toast("文件已删除");
+}
+
+async function uploadShots(projectId, input) {
+  const files = Array.from(input.files || []).filter(f => f.type.startsWith("image/"));
+  if (!files.length) { toast("请选择图片文件"); return; }
+  for (const file of files) {
+    const content = await fileToBase64(file);
+    await api("POST", "/api/projects/" + encodeURIComponent(projectId) + "/screenshots",
+              { name: file.name, content });
+  }
+  input.value = "";
+  await refresh();
+  toast(`已上传 ${files.length} 张截图`);
+}
+
+async function delShot(projectId, name) {
+  if (!confirm("确定删除截图 " + name + "？")) return;
+  await api("DELETE", "/api/projects/" + encodeURIComponent(projectId) + "/screenshots/" + encodeURIComponent(name));
+  await refresh();
+  toast("截图已删除");
+}
+
+/* ---------------- 奖项 ---------------- */
+function resetAwardForm() {
+  editingAward = null;
+  $("awardFormTitle").textContent = "新建奖项";
+  $("a_title").value = "";
+  $("a_year").value = "";
+  $("a_org").value = "";
+}
+
+function editAward(id) {
+  const a = SITE.awards.find(x => x.id === id);
+  if (!a) return;
+  editingAward = id;
+  $("awardFormTitle").textContent = "编辑奖项";
+  $("a_title").value = a.title || "";
+  $("a_year").value = a.year || "";
+  $("a_org").value = a.org || "";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function saveAward() {
+  const payload = {
+    title: $("a_title").value.trim(),
+    year: $("a_year").value.trim(),
+    org: $("a_org").value.trim(),
+  };
+  if (!payload.title) { toast("奖项名称不能为空"); return; }
+  if (editingAward) {
+    await api("PUT", "/api/awards/" + encodeURIComponent(editingAward), payload);
+  } else {
+    await api("POST", "/api/awards", payload);
+  }
+  resetAwardForm();
+  await refresh();
+  toast("奖项已保存");
+}
+
+async function deleteAward(id) {
+  if (!confirm("确定删除这个奖项？")) return;
+  await api("DELETE", "/api/awards/" + encodeURIComponent(id));
+  await refresh();
+  toast("奖项已删除");
+}
+
+function renderAwards() {
+  const box = $("awardList");
+  if (!SITE.awards.length) {
+    box.innerHTML = '<div class="muted">还没有奖项</div>';
+    return;
+  }
+  box.innerHTML = SITE.awards.map(a => `
+    <div class="list-item">
+      <div class="item-head">
+        <div><div class="t">${esc(a.title)}</div>
+          <div class="muted">${esc(a.year || "")}${a.org ? " · " + esc(a.org) : ""}</div>
+        </div>
+        <div class="ops">
+          <button class="ghost small" onclick="editAward('${esc(a.id)}')">编辑</button>
+          <button class="danger small" onclick="deleteAward('${esc(a.id)}')">删除</button>
+        </div>
+      </div>
+    </div>`).join("");
+}
+
+/* ---------------- Tab 切换 ---------------- */
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    tab.classList.add("active");
+    $("panel-" + tab.dataset.tab).classList.add("active");
+  });
+});
+
+refresh();
+</script>
+</body>
+</html>
